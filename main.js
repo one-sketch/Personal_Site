@@ -1,6 +1,7 @@
+// Counter variables for dynamic sections
 let eduCount = 1, projCount = 1, workCount = 1, leadCount = 1;
 
-// Add dynamic sections
+// Add dynamic sections - these functions add new entry fields
 function addEducation() {
   const section = document.getElementById('educationSection');
   const div = document.createElement('div');
@@ -56,70 +57,137 @@ function addLeadership() {
   leadCount++;
 }
 
-// Update preview dynamically
+// Make functions available globally for inline onclick handlers
+window.addEducation = addEducation;
+window.addProject = addProject;
+window.addWork = addWork;
+window.addLeadership = addLeadership;
+
+// Update preview with form data
 function updatePreview() {
   const form = document.getElementById('resumeForm');
   const preview = document.getElementById('preview');
+  
+  if (!form || !preview) {
+    console.error('Form or preview element not found');
+    return;
+  }
+  
   const formData = new FormData(form);
 
-  let html = `<h1>${formData.get('name')||''}</h1>`;
-  html += `<p>${formData.get('phone')||''} | ${formData.get('email')||''} | ${formData.get('linkedin')||''} | ${formData.get('website')||''}</p>`;
-  html += `<h2>Objective</h2><p>${formData.get('objective')||''}</p>`;
+  let html = `<h1>${formData.get('name') || ''}</h1>`;
+  html += `<p>${formData.get('phone') || ''} | ${formData.get('email') || ''} | ${formData.get('linkedin') || ''} | ${formData.get('website') || ''}</p>`;
+  html += `<h2>Objective</h2><p>${formData.get('objective') || ''}</p>`;
 
-  // Education
+  // Education section
   html += `<h2>Education</h2>`;
-  for(let i=0;;i++){
-    if(!formData.get(`education[${i}][school]`)) break;
+  for (let i = 0; ; i++) {
+    if (!formData.get(`education[${i}][school]`)) break;
     html += `<p>${formData.get(`education[${i}][school]`)}<br>${formData.get(`education[${i}][degree]`)}<br>${formData.get(`education[${i}][dates]`)}</p>`;
   }
 
-  // Skills
-  html += `<h2>Skills</h2><p>${formData.get('skills')||''}</p>`;
+  // Skills section
+  html += `<h2>Skills</h2><p>${formData.get('skills') || ''}</p>`;
 
-  // Projects
+  // Projects section
   html += `<h2>Projects</h2>`;
-  for(let i=0;;i++){
-    if(!formData.get(`projects[${i}][title]`)) break;
-    let bullets = formData.get(`projects[${i}][bullets]`).split('|').map(b=>"• "+b.trim()).join('<br>');
-    html += `<p>${formData.get(`projects[${i}][title]`)} (${formData.get(`projects[${i}][dates]`)})<br>${bullets}</p>`;
+  for (let i = 0; ; i++) {
+    if (!formData.get(`projects[${i}][title]`)) break;
+    const bullets = formData.get(`projects[${i}][bullets]`);
+    if (bullets) {
+      const bulletList = bullets.split('|').map(b => "• " + b.trim()).join('<br>');
+      html += `<p>${formData.get(`projects[${i}][title]`)} (${formData.get(`projects[${i}][dates]`)})<br>${bulletList}</p>`;
+    }
   }
 
-  // Work
+  // Work Experience section
   html += `<h2>Work Experience</h2>`;
-  for(let i=0;;i++){
-    if(!formData.get(`work[${i}][title]`)) break;
-    let bullets = formData.get(`work[${i}][bullets]`).split('|').map(b=>"• "+b.trim()).join('<br>');
-    html += `<p>${formData.get(`work[${i}][title]`)} - ${formData.get(`work[${i}][location]`)} (${formData.get(`work[${i}][dates]`)})<br>${bullets}</p>`;
+  for (let i = 0; ; i++) {
+    if (!formData.get(`work[${i}][title]`)) break;
+    const bullets = formData.get(`work[${i}][bullets]`);
+    if (bullets) {
+      const bulletList = bullets.split('|').map(b => "• " + b.trim()).join('<br>');
+      html += `<p>${formData.get(`work[${i}][title]`)} - ${formData.get(`work[${i}][location]`)} (${formData.get(`work[${i}][dates]`)})<br>${bulletList}</p>`;
+    }
   }
 
-  // Leadership
+  // Leadership Experience section
   html += `<h2>Leadership Experience</h2>`;
-  for(let i=0;;i++){
-    if(!formData.get(`leadership[${i}][title]`)) break;
-    let bullets = formData.get(`leadership[${i}][bullets]`).split('|').map(b=>"• "+b.trim()).join('<br>');
-    html += `<p>${formData.get(`leadership[${i}][title]`)} - ${formData.get(`leadership[${i}][organization]`)} (${formData.get(`leadership[${i}][location]`)})<br>${bullets}</p>`;
+  for (let i = 0; ; i++) {
+    if (!formData.get(`leadership[${i}][title]`)) break;
+    const bullets = formData.get(`leadership[${i}][bullets]`);
+    if (bullets) {
+      const bulletList = bullets.split('|').map(b => "• " + b.trim()).join('<br>');
+      html += `<p>${formData.get(`leadership[${i}][title]`)} - ${formData.get(`leadership[${i}][organization]`)} (${formData.get(`leadership[${i}][location]`)})<br>${bulletList}</p>`;
+    }
   }
 
   preview.innerHTML = html;
 }
 
-// Attach event listeners after DOM loads
-document.addEventListener('DOMContentLoaded', () => {
-  // Preview updates whenever input changes
-  document.getElementById('resumeForm').addEventListener('input', updatePreview);
-
-  // Submit via AJAX
-  document.getElementById('resumeForm').addEventListener('submit', function(e){
+// Wait for DOM to be fully loaded before attaching event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing resume builder...');
+  
+  const form = document.getElementById('resumeForm');
+  const previewBtn = document.getElementById('previewBtn');
+  
+  // Check if critical elements exist
+  if (!form) {
+    console.error('Resume form not found! Check your HTML.');
+    return;
+  }
+  
+  console.log('Form found, attaching listeners...');
+  
+  // Update preview on any input change
+  form.addEventListener('input', updatePreview);
+  
+  // Preview button click handler
+  if (previewBtn) {
+    previewBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      const formData = new FormData(this);
-      fetch('api.php', { method:'POST', body:formData })
-        .then(res => res.json())
-        .then(data => { 
-          if(data.success){
-            alert('Resume saved! ID: '+data.id);
-            document.getElementById('resume_id').value = data.id; // store for PDF download
-          } else alert('Error: '+data.error);
-        })
-        .catch(err => alert('Fetch error: '+err));
+      updatePreview();
+    });
+  }
+  
+  // Generate initial preview
+  updatePreview();
+
+  // Form submission handler
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    console.log('Form submitted');
+    
+    const formData = new FormData(this);
+    
+    fetch('api.php', { 
+      method: 'POST', 
+      body: formData 
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => { 
+      if (data.success) {
+        alert('Resume saved! ID: ' + data.id);
+        // Store ID for PDF download
+        const resumeIdInput = document.getElementById('resumeId');
+        if (resumeIdInput) {
+          resumeIdInput.value = data.id;
+        }
+      } else {
+        alert('Error: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(err => {
+      console.error('Fetch error:', err);
+      alert('Error submitting form: ' + err.message);
+    });
   });
+  
+  console.log('Resume builder initialized successfully!');
 });
