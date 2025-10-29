@@ -7,7 +7,7 @@ document.querySelector("#myForm").addEventListener("submit", async function (e) 
   messageBox.textContent = "Sending...";
 
   try {
-    let response = await fetch("https://yourphpbackend.epizy.com/api.php", {
+    let response = await fetch("https://kylie-higgins.kesug.com/api.php", {
       method: "POST",
       body: formData
     });
