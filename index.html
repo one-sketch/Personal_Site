@@ -1,28 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Form Test</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<title>Resume Builder</title>
+<style>
+body { font-family: Arial, sans-serif; margin:20px; }
+input, textarea { display:block; margin:5px 0; width:300px; }
+button { margin:5px 0; }
+#preview { border:1px solid #ccc; padding:10px; margin-top:20px; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Send Data Test</h1>
+<h1>Resume Builder</h1>
 
-    <form id="myForm">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required />
+<form id="resumeForm">
+  <input type="text" name="name" placeholder="Full Name" value="Ritchie Tiger">
+  <input type="text" name="phone" placeholder="Phone" value="(585) 555-3141">
+  <input type="text" name="email" placeholder="Email" value="rxt1234@rit.edu">
+  <input type="text" name="linkedin" placeholder="LinkedIn" value="linkedin.com/in/ritchietiger">
+  <input type="text" name="website" placeholder="Website" value="www.RitchieTiger.com">
+  <textarea name="objective" placeholder="Objective">Seeking a web developer co-op using strong skills in JavaScript, CSS and HTML5. Available May 20XX – December 20XX.</textarea>
 
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required />
-
-      <button type="submit">Submit</button>
-    </form>
-
-    <div id="message"></div>
+  <h2>Education</h2>
+  <div id="educationSection">
+    <div class="eduEntry">
+      <input type="text" name="education[0][school]" placeholder="School" value="Rochester Institute of Technology (RIT), Rochester, NY">
+      <input type="text" name="education[0][degree]" placeholder="Degree" value="Bachelor of Science, Web and Mobile Computing GPA: 3.1">
+      <input type="text" name="education[0][dates]" placeholder="Dates" value="Expected May 20XX">
+    </div>
   </div>
+  <button type="button" onclick="addEducation()">Add Education</button>
 
-  <script src="main.js"></script>
+  <h2>Skills</h2>
+  <textarea name="skills">Windows 10, 8.X, Server 2008, Ubuntu, Apple OS X, HTML5, CSS, C#, Java, JavaScript, MySQL, PHP basic, Microsoft Visual Studio, jGRASP, IntelliJ IDEA, XCode, Android Studio, VMware, Adobe Photoshop, Adobe Illustrator, FileZilla, MySQL</textarea>
+
+  <h2>Projects</h2>
+  <div id="projectSection">
+    <div class="projEntry">
+      <input type="text" name="projects[0][title]" placeholder="Project Title" value="Mobile App Prototype, Personal Project">
+      <input type="text" name="projects[0][dates]" placeholder="Dates" value="September 20XX–October 20XX">
+      <textarea name="projects[0][bullets]" placeholder="Bullet points separated by |">Developed an InVision prototype for a mobile app centered around sharing and looking at recipes|Created paper sketches that went through user testing before being converted to wireframes|Generated mockups representative of the concept and created the final prototype</textarea>
+    </div>
+  </div>
+  <button type="button" onclick="addProject()">Add Project</button>
+
+  <h2>Work Experience</h2>
+  <div id="workSection">
+    <div class="workEntry">
+      <input type="text" name="work[0][title]" placeholder="Job Title" value="Student Web Developer, RIT Tech Crew">
+      <input type="text" name="work[0][dates]" placeholder="Dates" value="August 20XX–Present">
+      <input type="text" name="work[0][location]" placeholder="Location" value="Rochester, NY">
+      <textarea name="work[0][bullets]" placeholder="Bullet points separated by |">Develop and maintain web applications using C#, HTML, CSS, JavaScript, C and Java|Communicate with internal and external customers to execute project objectives|Collaborate with team members to effectively staff the department 10 hours per week while balancing full course load</textarea>
+    </div>
+  </div>
+  <button type="button" onclick="addWork()">Add Work</button>
+
+  <h2>Leadership Experience</h2>
+  <div id="leadershipSection">
+    <div class="leadEntry">
+      <input type="text" name="leadership[0][title]" placeholder="Role / Position" value="Recruitment Chair">
+      <input type="text" name="leadership[0][organization]" placeholder="Organization" value="Alpha Alpha Alpha">
+      <input type="text" name="leadership[0][dates]" placeholder="Dates" value="August 20XX–Present">
+      <input type="text" name="leadership[0][location]" placeholder="Location" value="Rochester, NY">
+      <textarea name="leadership[0][bullets]" placeholder="Bullet points separated by |">Manage successful member recruitment and retention within the organization|Directed a group of 30 to 40 women to pro-actively recruit unaffiliated women|Effectively created and delegated team building workshops preparing members for a three-day formal recruitment process</textarea>
+    </div>
+  </div>
+  <button type="button" onclick="addLeadership()">Add Leadership</button>
+
+  <button type="button" id="previewBtn">Preview</button>
+  <button type="submit">Submit</button>
+</form>
+
+<form method="post" action="download_pdf.php" id="downloadForm">
+  <input type="hidden" name="resume_id" id="resumeId" value="">
+  <button type="submit">Download PDF</button>
+</form>
+
+<h2>Preview</h2>
+<div id="preview"></div>
+
+<script src="main.js"></script>
 </body>
 </html>
